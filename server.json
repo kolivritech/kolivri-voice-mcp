@@ -1,0 +1,70 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.kolivritech/kolivri-voice-mcp",
+  "description": "Kolivri AI Voice MCP Server — give Claude Code, OpenCode, Cursor, and Claude Desktop a real phone line with KYC and rate-limit guards.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/kolivritech/kolivri-voice-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "kolivri-voice-mcp",
+      "version": "1.0.0",
+      "runtime_hint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environment_variables": [
+        {
+          "name": "KOLIVRI_API_KEY",
+          "description": "Kolivri API key sent in the x-api-key header for authenticated voice calls.",
+          "is_required": true,
+          "is_secret": true
+        },
+        {
+          "name": "KOLIVRI_WEBHOOK_ID",
+          "description": "Default Kolivri campaign/engine webhook ID.",
+          "is_required": false,
+          "default": "default-webhook"
+        },
+        {
+          "name": "KOLIVRI_VERIFIED_CALLER_ID",
+          "description": "Comma-separated KYC-verified outbound caller IDs in E.164 or Israeli format.",
+          "is_required": false
+        },
+        {
+          "name": "KOLIVRI_API_URL",
+          "description": "Kolivri API base URL.",
+          "is_required": false,
+          "default": "https://app.kolivri.co.il"
+        },
+        {
+          "name": "KOLIVRI_MAX_CALLS_PER_MINUTE",
+          "description": "Maximum outbound calls per minute per API key (default 5).",
+          "is_required": false,
+          "default": "5"
+        }
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "kolivri_place_call",
+      "description": "Place an outbound AI voice call via Kolivri Engine with KYC verified-caller and anti-abuse rate-limit protection."
+    },
+    {
+      "name": "kolivri_get_call_status",
+      "description": "Retrieve structured call status, outcome, transcript, summary, appointment status, and recording URL for a Kolivri call."
+    },
+    {
+      "name": "kolivri_carrier_forwarding_codes",
+      "description": "Generate 30-second GSM/carrier call-forwarding dial codes (*61*, *67*, *62*, *21* and ##002# reset) for Israeli telecom carriers."
+    },
+    {
+      "name": "kolivri_preview_roi",
+      "description": "Calculate SMB missed-call revenue loss and recommend the matching Kolivri unified plan (Starter $69 / ₪247, Business $139 / ₪479, Pro $249 / ₪880)."
+    }
+  ]
+}
