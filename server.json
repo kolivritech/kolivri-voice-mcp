@@ -9,46 +9,13 @@
   },
   "packages": [
     {
-      "registry_name": "npm",
       "name": "kolivri-voice-mcp",
       "version": "1.0.0",
-      "runtime_hint": "npx",
       "transport": {
         "type": "stdio"
       },
-      "environment_variables": [
-        {
-          "name": "KOLIVRI_API_KEY",
-          "description": "Kolivri API key sent in the x-api-key header for authenticated voice calls.",
-          "is_required": true,
-          "is_secret": true
-        },
-        {
-          "name": "KOLIVRI_WEBHOOK_ID",
-          "description": "Default Kolivri campaign/engine webhook ID.",
-          "is_required": false,
-          "default": "default-webhook"
-        },
-        {
-          "name": "KOLIVRI_VERIFIED_CALLER_ID",
-          "description": "Comma-separated KYC-verified outbound caller IDs in E.164 or Israeli format.",
-          "is_required": false
-        },
-        {
-          "name": "KOLIVRI_API_URL",
-          "description": "Kolivri API base URL.",
-          "is_required": false,
-          "default": "https://app.kolivri.co.il"
-        },
-        {
-          "name": "KOLIVRI_MAX_CALLS_PER_MINUTE",
-          "description": "Maximum outbound calls per minute per API key (default 5).",
-          "is_required": false,
-          "default": "5"
-        }
-      ],
-      "registryType": "npm",
-      "identifier": "kolivri-voice-mcp",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/kolivritech/kolivri-voice-mcp/releases/download/v1.0.0/kolivri-voice-mcp.mcpb",
       "environmentVariables": [
         {
           "name": "KOLIVRI_API_KEY",
@@ -88,7 +55,8 @@
           "format": "string",
           "default": "5"
         }
-      ]
+      ],
+      "fileSha256": "b921df416140105cd7215276c709edb481d7cb9730d77152e28c11a0b559457a"
     }
   ],
   "tools": [
