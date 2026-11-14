@@ -1,6 +1,15 @@
 # `kolivri-voice-mcp` — Real AI Phone Line for Claude Code, OpenCode, Cursor & Claude Desktop
 
+[![kolivritech/kolivri-voice-mcp MCP server](https://glama.ai/mcp/servers/kolivritech/kolivri-voice-mcp/badges/score.svg)](https://glama.ai/mcp/servers/kolivritech/kolivri-voice-mcp)
+
 `kolivri-voice-mcp` is a zero-dependency Node.js ESM Model Context Protocol (MCP) server that gives AI coding and operator agents a real phone line powered by Kolivri (`app.kolivri.co.il`).
+
+## Live 24/7 AI Demo Lines & Contact
+
+- **US 24/7 Live AI Phone Line**: `+1 (507) 604-6732`
+- **Israel 24/7 Live AI Phone Line**: `074-760-5550` (`+972-74-760-5550`)
+- **Support & Partnerships**: `stas@kolivri.com` · WhatsApp `054-787-5670`
+- **Web & Onboarding**: [kolivri.com](https://kolivri.com) · [app.kolivri.co.il](https://app.kolivri.co.il)
 
 ## Features & Tools
 
@@ -72,6 +81,17 @@ Add `kolivri-voice` under the `"mcp"` key in `opencode.json`:
     }
   }
 }
+```
+
+### 4. Docker
+
+```bash
+docker build -t kolivri-voice-mcp .
+docker run -i --rm \
+  -e KOLIVRI_API_KEY="your-kolivri-api-key" \
+  -e KOLIVRI_WEBHOOK_ID="your-webhook-id" \
+  -e KOLIVRI_VERIFIED_CALLER_ID="+97235550199" \
+  kolivri-voice-mcp
 ```
 
 ## Running Tests

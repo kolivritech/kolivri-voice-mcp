@@ -606,11 +606,13 @@ describe('kolivri-voice-mcp end-to-end integration suite', () => {
     assert.ok(typeof serverManifest.description === 'string' && serverManifest.description.length > 10);
     assert.equal(serverManifest.version, '1.0.0');
     assert.ok(Array.isArray(serverManifest.packages) && serverManifest.packages.length === 1);
-    const npmPkg = serverManifest.packages[0];
-    assert.equal(npmPkg.registry_name, 'npm');
-    assert.equal(npmPkg.name, 'kolivri-voice-mcp');
-    assert.ok(Array.isArray(npmPkg.environment_variables) && npmPkg.environment_variables.length >= 4);
-    const envNames = npmPkg.environment_variables.map((e) => e.name);
+    const pkgEntry = serverManifest.packages[0];
+    const registryKind = pkgEntry.registryType || pkgEntry.registry_name;
+    assert.ok(['npm', 'mcpb'].includes(registryKind));
+    assert.equal(pkgEntry.name, 'kolivri-voice-mcp');
+    const envList = pkgEntry.environmentVariables || pkgEntry.environment_variables;
+    assert.ok(Array.isArray(envList) && envList.length >= 4);
+    const envNames = envList.map((e) => e.name);
     assert.ok(envNames.includes('KOLIVRI_API_KEY'));
     assert.ok(envNames.includes('KOLIVRI_WEBHOOK_ID'));
     assert.ok(envNames.includes('KOLIVRI_VERIFIED_CALLER_ID'));
@@ -620,5 +622,21 @@ describe('kolivri-voice-mcp end-to-end integration suite', () => {
       serverManifest.tools.map((t) => t.name),
       expectedTools
     );
+
+    // 4. Validate production Dockerfile & README Glama badge / demo numbers
+    const dockerfilePath = path.join(pkgDir, 'Dockerfile');
+    assert.ok(fs.existsSync(dockerfilePath), 'Dockerfile must exist for Glama introspection');
+    const dockerfileRaw = fs.readFileSync(dockerfilePath, 'utf8');
+    assert.match(dockerfileRaw, /^FROM node:22-alpine/m);
+    assert.match(dockerfileRaw, /ENTRYPOINT \["node", "src\/server\.mjs"\]/);
+
+    const readmeRaw = fs.readFileSync(path.join(pkgDir, 'README.md'), 'utf8');
+    assert.ok(
+      readmeRaw.includes(
+        '[![kolivritech/kolivri-voice-mcp MCP server](https://glama.ai/mcp/servers/kolivritech/kolivri-voice-mcp/badges/score.svg)](https://glama.ai/mcp/servers/kolivritech/kolivri-voice-mcp)'
+      )
+    );
+    assert.ok(readmeRaw.includes('+1 (507) 604-6732'));
+    assert.ok(readmeRaw.includes('074-760-5550'));
   });
 });
