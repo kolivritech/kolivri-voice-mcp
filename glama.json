@@ -3,7 +3,9 @@
   "name": "kolivri-voice-mcp",
   "maintainer": "kolivritech",
   "maintainers": [
-    "kolivritech"
+    "kolivritech",
+    "stasars",
+    "stuk88"
   ],
   "description": "Kolivri AI Voice MCP Server — give Claude Code, OpenCode, Cursor, and Claude Desktop a real phone line with KYC and rate-limit guards.",
   "repository": "https://github.com/kolivritech/kolivri-voice-mcp",

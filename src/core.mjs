@@ -363,6 +363,13 @@ export const MCP_TOOLS = Object.freeze([
       },
       required: ['to', 'objective', 'verifiedCallerId'],
     },
+    annotations: {
+      title: 'Place Outbound AI Voice Call',
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: true,
+    },
   },
   {
     name: 'kolivri_get_call_status',
@@ -377,6 +384,13 @@ export const MCP_TOOLS = Object.freeze([
         },
       },
       required: ['callId'],
+    },
+    annotations: {
+      title: 'Get Call Status & Transcript',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: true,
     },
   },
   {
@@ -404,6 +418,13 @@ export const MCP_TOOLS = Object.freeze([
         },
       },
       required: ['carrier', 'targetNumber'],
+    },
+    annotations: {
+      title: 'Generate Carrier Call-Forwarding Codes',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
   },
   {
@@ -437,6 +458,13 @@ export const MCP_TOOLS = Object.freeze([
         },
       },
       required: ['missedCallsPerWeek', 'avgDealValueIls'],
+    },
+    annotations: {
+      title: 'Preview Missed-Call ROI',
+      readOnlyHint: true,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
   },
 ]);
@@ -734,11 +762,15 @@ export function createKolivriVoiceService(options = {}) {
 
     try {
       if (method === 'initialize') {
+        const requestedProto =
+          typeof params?.protocolVersion === 'string' && params.protocolVersion.trim()
+            ? params.protocolVersion.trim()
+            : '2024-11-05';
         return {
           jsonrpc: '2.0',
           id,
           result: {
-            protocolVersion: params?.protocolVersion || '2024-11-05',
+            protocolVersion: requestedProto,
             capabilities: {
               tools: {
                 listChanged: false,
@@ -748,7 +780,17 @@ export function createKolivriVoiceService(options = {}) {
               name: 'kolivri-voice-mcp',
               version: '1.0.0',
             },
+            instructions:
+              'Kolivri AI Voice MCP Server (https://kolivri.com/mcp/). Place KYC-verified outbound AI phone calls, inspect transcripts/summaries, generate carrier call-forwarding dial codes, and calculate missed-call ROI.',
           },
+        };
+      }
+
+      if (method === 'initialized' || method === 'notifications/initialized') {
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {},
         };
       }
 
@@ -766,6 +808,26 @@ export function createKolivriVoiceService(options = {}) {
           id,
           result: {
             tools: MCP_TOOLS,
+          },
+        };
+      }
+
+      if (method === 'resources/list') {
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            resources: [],
+          },
+        };
+      }
+
+      if (method === 'prompts/list') {
+        return {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            prompts: [],
           },
         };
       }
