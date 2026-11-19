@@ -4,7 +4,7 @@
   "description": "Kolivri AI Voice MCP Server — give Claude Code, OpenCode, Cursor, and Claude Desktop a real phone line with KYC and rate-limit guards.",
   "type": "module",
   "bin": {
-    "kolivri-voice-mcp": "./src/server.mjs"
+    "kolivri-voice-mcp": "src/server.mjs"
   },
   "main": "./src/core.mjs",
   "scripts": {
@@ -27,7 +27,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kolivritech/kolivri-voice-mcp.git"
+    "url": "git+https://github.com/kolivritech/kolivri-voice-mcp.git"
   },
   "homepage": "https://kolivri.com/mcp/"
 }

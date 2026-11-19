@@ -185,8 +185,24 @@ describe('kolivri-voice-mcp end-to-end integration suite', () => {
     assert.equal(initRes.jsonrpc, '2.0');
     assert.equal(initRes.result.serverInfo.name, 'kolivri-voice-mcp');
     assert.ok(initRes.result.capabilities.tools);
+    assert.ok(initRes.result.instructions?.includes('Kolivri AI Voice MCP Server'));
+
+    const initBadProto = await mcpClient.request('initialize', {
+      protocolVersion: { malformed: true },
+      capabilities: {},
+    });
+    assert.equal(initBadProto.result.protocolVersion, '2024-11-05');
+
+    const initAck = await mcpClient.request('initialized', {});
+    assert.deepEqual(initAck.result, {});
 
     mcpClient.notify('notifications/initialized');
+
+    const resList = await mcpClient.request('resources/list', {});
+    assert.deepEqual(resList.result.resources, []);
+
+    const promptsList = await mcpClient.request('prompts/list', {});
+    assert.deepEqual(promptsList.result.prompts, []);
 
     const listRes = await mcpClient.request('tools/list');
     const tools = listRes.result.tools;
@@ -623,7 +639,19 @@ describe('kolivri-voice-mcp end-to-end integration suite', () => {
       expectedTools
     );
 
-    // 4. Validate production Dockerfile & README Glama badge / demo numbers
+    // 4. Validate MIT LICENSE, production Dockerfile & README Glama badge / demo numbers
+    const licensePath = path.join(pkgDir, 'LICENSE');
+    assert.ok(fs.existsSync(licensePath), 'LICENSE must exist at repository root for Glama indexing');
+    const licenseRaw = fs.readFileSync(licensePath, 'utf8');
+    assert.match(licenseRaw, /^MIT License/m);
+    assert.match(licenseRaw, /Copyright \(c\) 2026 Kolivri$/m);
+    assert.match(licenseRaw, /IN NO EVENT SHALL THE\s+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE/);
+    assert.ok(Array.isArray(glama.maintainers) && glama.maintainers.includes('stuk88'));
+    assert.ok(
+      MCP_TOOLS.every((t) => t.annotations && typeof t.annotations.readOnlyHint === 'boolean'),
+      'all tools must publish MCP quality annotations'
+    );
+
     const dockerfilePath = path.join(pkgDir, 'Dockerfile');
     assert.ok(fs.existsSync(dockerfilePath), 'Dockerfile must exist for Glama introspection');
     const dockerfileRaw = fs.readFileSync(dockerfilePath, 'utf8');
