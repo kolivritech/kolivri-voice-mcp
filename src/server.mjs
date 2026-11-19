@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
@@ -56,8 +57,17 @@ export function startMcpStdioServer({
   };
 }
 
+function resolveRealOrAbsPath(target) {
+  try {
+    return fs.realpathSync(target);
+  } catch {
+    return path.resolve(target);
+  }
+}
+
 const isDirectExecution =
-  Boolean(process.argv[1]) && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+  Boolean(process.argv[1]) &&
+  resolveRealOrAbsPath(process.argv[1]) === resolveRealOrAbsPath(fileURLToPath(import.meta.url));
 
 if (isDirectExecution) {
   startMcpStdioServer();
