@@ -666,5 +666,48 @@ describe('kolivri-voice-mcp end-to-end integration suite', () => {
     );
     assert.ok(readmeRaw.includes('+1 (507) 604-6732'));
     assert.ok(readmeRaw.includes('074-760-5550'));
+
+    const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, 'package.json'), 'utf8'));
+    assert.equal(pkg.mcpName, 'io.github.kolivritech/kolivri-voice-mcp');
+  });
+
+  it('boots startMcpStdioServer when invoked via an npx .bin symlink', async () => {
+    const tmpBinDir = fs.mkdtempSync(path.join(__dirname, '.tmp-bin-'));
+    const symlinkBin = path.join(tmpBinDir, 'kolivri-voice-mcp');
+    fs.symlinkSync(SERVER_PATH, symlinkBin);
+
+    const child = spawn(process.execPath, [symlinkBin], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    try {
+      const firstLine = await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Symlink bin timed out waiting for initialize response')), 4000);
+        const rl = readline.createInterface({ input: child.stdout, crlfDelay: Infinity });
+        rl.once('line', (line) => {
+          clearTimeout(timer);
+          rl.close();
+          resolve(JSON.parse(line));
+        });
+        child.once('exit', (code) => {
+          clearTimeout(timer);
+          reject(new Error(`Symlink bin exited prematurely with code ${code}`));
+        });
+        child.stdin.write(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: 99,
+            method: 'initialize',
+            params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'npx-test', version: '1.0.0' } },
+          }) + '\n'
+        );
+      });
+
+      assert.equal(firstLine.id, 99);
+      assert.equal(firstLine.result.serverInfo.name, 'kolivri-voice-mcp');
+    } finally {
+      child.kill();
+      fs.rmSync(tmpBinDir, { recursive: true, force: true });
+    }
   });
 });
